@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light Theme Colors */
+  --color-primary-blue: #007BFF;
+  --color-deep-charcoal: #2C3E50;
+  --color-soft-cloud: #F8F9FA;
+  --color-vibrant-cyan: #00D2FF;
+
+  /* Dark Theme Colors */
+  --color-deep-obsidian: #0F172A;
+  --color-royal-indigo: #6366F1;
+  --color-electric-blue: #38BDF8;
+  --color-dark-slate: #1E293B;
+  --color-off-white: #F1F5F9;
+  
+  /* Semantic Colors */
+  --color-bg-light: var(--color-soft-cloud);
+  --color-text-light: var(--color-deep-charcoal);
+  --color-card-light: #ffffff;
+  
+  --color-bg-dark: var(--color-deep-obsidian);
+  --color-text-dark: var(--color-off-white);
+  --color-card-dark: var(--color-dark-slate);
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(100, 116, 139, 0.2); /* slate-500 with opacity */
+    transition: all 0.3s ease;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.1); /* slate-400 with lower opacity */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.4);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.3);
+  }
+
+  /* Specific class for elements that need a scrollbar but want it even more subtle */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2); /* royal-indigo with opacity */
+  }
+
+  /* Firefox support */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.2) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: rgba(148, 163, 184, 0.1) transparent;
+  }
+}
+
+.dark {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-dark);
+}
+
+.light {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-light);
+}
