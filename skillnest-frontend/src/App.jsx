@@ -54,15 +54,16 @@ function App() {
         setIsDark={setIsDark}
         onLogin={() => { setAuthMode('login'); setShowLanding(false); }}
         onGetStarted={() => { setAuthMode('signup'); setShowLanding(false); }}
+        
       />
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <Auth 
+      <Auth
         initialMode={authMode}
-        onLogin={handleLogin} 
+        onLogin={handleLogin}
         onBackToHome={() => setShowLanding(true)}
         isDark={isDark}
         setIsDark={setIsDark}
@@ -106,25 +107,24 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen flex transition-colors duration-300 ${
-      isDark ? 'bg-deep-obsidian text-slate-200' : 'bg-soft-cloud-gray text-deep-charcoal'
-    }`}>
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        isDark={isDark} 
+    <div className={`min-h-screen flex transition-colors duration-300 ${isDark ? 'bg-deep-obsidian text-slate-200' : 'bg-soft-cloud-gray text-deep-charcoal'
+      }`}>
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isDark={isDark}
         onLogout={handleLogout}
         userRole={userRole}
       />
-      
+
       <main className="flex-1 ml-64 min-h-screen flex flex-col">
-        <Header 
-          isDark={isDark} 
-          setIsDark={setIsDark} 
-          onLogout={handleLogout} 
+        <Header
+          isDark={isDark}
+          setIsDark={setIsDark}
+          onLogout={handleLogout}
           setActiveTab={setActiveTab}
         />
-        
+
         <div className="flex-1 p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div

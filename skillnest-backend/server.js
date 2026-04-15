@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cors = require("cors");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -8,6 +9,9 @@ const app = express();
 
 // middleware
 app.use(express.json());
+
+// Require chatbot routes
+const chatRoutes = require("./routes/chat");
 
 // DB connect
 mongoose.connect(process.env.MONGO_URI)
@@ -25,8 +29,8 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 // const cors = require("cors");
 // app.use(cors());
 app.use(cors({
-  origin: "https://your-vercel-url.vercel.app",
-  credentials: true
+  origin: "*",
+  // credentials: true
 }));
 
 // ROUTES YAHAN ADD KARA HAI
@@ -40,6 +44,7 @@ app.use("/api/ai", require("./routes/aiRoutes"));
 app.use("/api/badges", require("./routes/badgeRoutes"));
 app.use("/api/progress", require("./routes/progressRoutes"));
 app.use("/api/user", require("./routes/userRoutes"));
+app.use("/api/chat", chatRoutes);
 // app.use("/api/ai", require("./routes/aiRoutes"));
 
 // test route

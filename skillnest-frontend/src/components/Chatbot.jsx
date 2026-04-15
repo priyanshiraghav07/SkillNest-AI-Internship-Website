@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  MessageSquare, 
-  X, 
-  Send, 
-  Bot, 
-  User, 
-  Loader2, 
-  Minimize2, 
+import {
+  MessageSquare,
+  X,
+  Send,
+  Bot,
+  User,
+  Loader2,
+  Minimize2,
   Maximize2,
   Zap,
   Search,
@@ -52,44 +52,45 @@ export default function Chatbot({ isDark }) {
   }, [messages]);
 
   const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (e) e.preventDefault(); // 🔥 MOST IMPORTANT
 
-    const userMessage = input.trim();
-    setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-    setIsLoading(true);
+    if (!input.trim()) return;
+
+    const userMessage = input;
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: userMessage }
+    ]);
+
+    setInput("");
+
+    setIsLoading(true); // 🔥 ADD THIS
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      
-      const chatHistory = messages.map(msg => ({
-        role: msg.role === 'bot' ? 'model' : 'user',
-        parts: [{ text: msg.content }]
-      }));
-
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [
-          ...chatHistory,
-          { role: 'user', parts: [{ text: userMessage }] }
-        ],
-        config: {
-          systemInstruction: `You are SkillNest AI, a helpful assistant for an internship management platform. 
-          Mode: ${activeTab}. 
-          Thinking Mode: ${isThinkingMode ? 'ON' : 'OFF'}.
-          Help students find internships, optimize resumes, prepare for interviews, and manage applications. 
-          Be professional, encouraging, and concise.`,
-        }
+      await new Promise(res => setTimeout(res, 1500)); // 🔥 delay
+      const res = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMessage }),
       });
 
-      const botResponse = response.text;
-      setMessages(prev => [...prev, { role: 'bot', content: botResponse }]);
-    } catch (error) {
-      console.error("Chatbot Error:", error);
-      setMessages(prev => [...prev, { role: 'bot', content: "Sorry, I'm having trouble connecting right now. Please try again later." }]);
+      const data = await res.json();
+
+      // setMessages((prev) => [
+      //   ...prev,
+      //   { role: "bot", content: data.reply }
+      // ]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", content: data.reply || "Please try asking in a simpler way" }
+      ]);
+    } catch (err) {
+      console.log(err);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // 🔥 ADD THIS
     }
   };
 
@@ -124,7 +125,7 @@ export default function Chatbot({ isDark }) {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 rounded-xl hover:bg-white/10 transition-colors"
               >
@@ -138,11 +139,10 @@ export default function Chatbot({ isDark }) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                    activeTab === tab.id 
-                      ? 'bg-white text-black' 
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === tab.id
+                    ? 'bg-white text-black'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
                 >
                   <tab.icon size={14} />
                   {tab.label}
@@ -160,9 +160,8 @@ export default function Chatbot({ isDark }) {
                       <button
                         key={size}
                         onClick={() => setImageSize(size)}
-                        className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${
-                          imageSize === size ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'
-                        }`}
+                        className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${imageSize === size ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'
+                          }`}
                       >
                         {size}
                       </button>
@@ -190,25 +189,25 @@ export default function Chatbot({ isDark }) {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Upload</span>
-                  <button 
+                  <button
                     onClick={() => imageInputRef.current?.click()}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-royal-indigo/20 text-royal-indigo text-[10px] font-bold hover:bg-royal-indigo/30 transition-all"
                   >
                     <ImageIcon size={12} />
                     {uploadedImage ? 'Change Image' : 'Select Image'}
                   </button>
-                  <input 
-                    type="file" 
-                    ref={imageInputRef} 
-                    onChange={handleImageUpload} 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    ref={imageInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
                     accept="image/*"
                   />
                 </div>
                 {uploadedImage && (
                   <div className="relative w-full h-20 rounded-xl overflow-hidden border border-slate-700">
                     <img src={uploadedImage} alt="Uploaded" className="w-full h-full object-cover" />
-                    <button 
+                    <button
                       onClick={() => setUploadedImage(null)}
                       className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white hover:bg-black/70"
                     >
@@ -225,13 +224,12 @@ export default function Chatbot({ isDark }) {
                 <Brain size={14} />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Thinking Mode</span>
               </div>
-              <button 
+              <button
                 onClick={() => setIsThinkingMode(!isThinkingMode)}
-                className={`w-8 h-4 rounded-full transition-all relative ${
-                  isThinkingMode ? 'bg-royal-indigo' : 'bg-slate-700'
-                }`}
+                className={`w-8 h-4 rounded-full transition-all relative ${isThinkingMode ? 'bg-royal-indigo' : 'bg-slate-700'
+                  }`}
               >
-                <motion.div 
+                <motion.div
                   animate={{ x: isThinkingMode ? 16 : 2 }}
                   className="absolute top-0.5 left-0 w-3 h-3 rounded-full bg-white shadow-sm"
                 />
@@ -253,11 +251,10 @@ export default function Chatbot({ isDark }) {
                         <Bot size={16} className="text-royal-indigo" />
                       </div>
                     )}
-                    <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-royal-indigo text-white rounded-tr-none'
-                        : 'bg-[#1a1d23] text-slate-200 border border-slate-800 rounded-tl-none'
-                    }`}>
+                    <div className={`p-4 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
+                      ? 'bg-royal-indigo text-white rounded-tr-none'
+                      : 'bg-[#1a1d23] text-slate-200 border border-slate-800 rounded-tl-none'
+                      }`}>
                       {msg.content}
                     </div>
                   </div>
@@ -280,7 +277,7 @@ export default function Chatbot({ isDark }) {
 
             {/* Input Area */}
             <div className="p-5 bg-[#0f1115] border-t border-slate-800">
-              <form onSubmit={handleSend} className="relative">
+              <form onSubmit={(e) => handleSend(e)} className="relative">
                 <input
                   type="text"
                   value={input}
@@ -288,14 +285,12 @@ export default function Chatbot({ isDark }) {
                   placeholder={activeTab === 'image' ? "Describe the image..." : "Type a message..."}
                   className="w-full pl-5 pr-14 py-4 rounded-2xl bg-[#1a1d23] border border-slate-800 text-sm text-white focus:outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all placeholder:text-slate-600"
                 />
-                <button
-                  type="submit"
+                <button type="button" onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                    !input.trim() || isLoading
-                      ? 'bg-slate-800 text-slate-600 cursor-not-allowed'
-                      : 'bg-royal-indigo text-white hover:scale-105 active:scale-95 shadow-lg shadow-royal-indigo/20'
-                  }`}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${!input.trim() || isLoading
+                    ? 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                    : 'bg-royal-indigo text-white hover:scale-105 active:scale-95 shadow-lg shadow-royal-indigo/20'
+                    }`}
                 >
                   <Send size={18} />
                 </button>
@@ -310,11 +305,10 @@ export default function Chatbot({ isDark }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all ${
-          isOpen 
-            ? 'bg-red-500 text-white rotate-0' 
-            : 'bg-royal-indigo text-white'
-        }`}
+        className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all ${isOpen
+          ? 'bg-red-500 text-white rotate-0'
+          : 'bg-royal-indigo text-white'
+          }`}
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
       </motion.button>
