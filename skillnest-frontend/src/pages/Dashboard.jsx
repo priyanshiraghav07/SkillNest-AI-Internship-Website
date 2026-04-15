@@ -68,7 +68,7 @@ export default function Dashboard({ isDark, setActiveTab }) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/")
+    fetch("https://skillnest-ai-internship-website.onrender.com/")
       .then((res) => res.text())
       .then((data) => setMessage(data))
       .catch((err) => console.log(err));

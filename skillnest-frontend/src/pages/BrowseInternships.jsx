@@ -112,7 +112,7 @@ export default function BrowseInternships({ isDark }) {
   const filteredInternships = internships;
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/internships")
+    fetch("https://skillnest-ai-internship-website.onrender.com/api/internships")
       .then((res) => res.json())
       .then((data) => setInternships(data))
       .catch((err) => console.log(err));
@@ -122,7 +122,7 @@ export default function BrowseInternships({ isDark }) {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch("http://localhost:5000/api/applications/apply", {
+      await fetch("https://skillnest-ai-internship-website.onrender.com/api/applications/apply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

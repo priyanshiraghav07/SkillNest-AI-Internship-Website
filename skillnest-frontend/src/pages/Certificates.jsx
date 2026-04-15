@@ -163,7 +163,7 @@ export default function Certificates({ isDark }) {
         const token = localStorage.getItem("token");
         const internshipId = "69cb8b10dd61d6961a999715"; // test ke liye
 
-        const res = await fetch(`http://localhost:5000/api/certificate?internshipId=${internshipId}`, {
+        const res = await fetch(`https://skillnest-ai-internship-website.onrender.com/api/certificate?internshipId=${internshipId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -201,7 +201,7 @@ export default function Certificates({ isDark }) {
     const token = localStorage.getItem("token");
   
     const res = await fetch(
-      `http://localhost:5000/api/certificate?internshipId=69cb8b10dd61d6961a999715`,
+      `https://skillnest-ai-internship-website.onrender.com/api/certificate?internshipId=69cb8b10dd61d6961a999715`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

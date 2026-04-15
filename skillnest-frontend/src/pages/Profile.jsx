@@ -56,7 +56,7 @@ export default function Profile({ isDark }) {
 
   const handleSave = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/user/update", {
+      const res = await fetch("https://skillnest-ai-internship-website.onrender.com/api/user/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"

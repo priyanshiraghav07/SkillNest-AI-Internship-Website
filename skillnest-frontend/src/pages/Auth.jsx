@@ -146,8 +146,8 @@ export default function Auth({ onLogin, initialMode = 'login', onBackToHome, isD
 
               try {
                 const url = isLogin
-                  ? "http://localhost:5000/api/auth/login"
-                  : "http://localhost:5000/api/auth/register";
+                  ? "https://skillnest-ai-internship-website.onrender.com/api/auth/login"
+                  : "https://skillnest-ai-internship-website.onrender.com/api/auth/register";
 
                 // const res = await fetch(url, {
                 //   method: "POST",
