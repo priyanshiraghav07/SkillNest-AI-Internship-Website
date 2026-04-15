@@ -22,8 +22,12 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 });
 
 //cors for frontend
-const cors = require("cors");
-app.use(cors());
+// const cors = require("cors");
+// app.use(cors());
+app.use(cors({
+  origin: "https://your-vercel-url.vercel.app",
+  credentials: true
+}));
 
 // ROUTES YAHAN ADD KARA HAI
 app.use("/api/auth", require("./routes/authRoutes"));
