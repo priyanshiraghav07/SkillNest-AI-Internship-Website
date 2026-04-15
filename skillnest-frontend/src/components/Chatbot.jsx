@@ -69,7 +69,7 @@ export default function Chatbot({ isDark }) {
 
     try {
       await new Promise(res => setTimeout(res, 1500)); // 🔥 delay
-      const res = await fetch("http://localhost:5000/api/chat", {
+      const res = await fetch("https://skillnest-ai-internship-website.onrender.com/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
