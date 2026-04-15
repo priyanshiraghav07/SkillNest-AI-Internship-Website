@@ -1,18 +1,19 @@
 import { useState, useRef } from 'react';
-import { 
-  Wrench, 
-  ShieldCheck, 
-  FileSearch, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Upload, 
+import {
+  Wrench,
+  ShieldCheck,
+  FileSearch,
+  AlertTriangle,
+  CheckCircle2,
+  Upload,
   Search,
   Download,
   Trash2,
   Loader2,
   Sparkles
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+// import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const initialReports = [
   { id: 1, file: 'Frontend_Project_Final.pdf', status: 'Verified', aiScore: '3%', date: 'Apr 22, 2024' },
@@ -30,6 +31,12 @@ export default function AITools({ isDark }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
+  const handleUpload = () => {
+    const count = JSON.parse(localStorage.getItem("submissionCount")) || 0;
+
+    localStorage.setItem("submissionCount", count + 1);
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -46,6 +53,10 @@ export default function AITools({ isDark }) {
         if (prev >= 100) {
           clearInterval(interval);
           setIsScanning(false);
+
+          // 🔥 YE ADD KAR (IMPORTANT)
+          handleUpload();
+          
           const newReport = {
             id: Date.now(),
             file: fileName || 'New_Submission_Analysis.pdf',
@@ -53,7 +64,7 @@ export default function AITools({ isDark }) {
             aiScore: Math.floor(Math.random() * 30) + '%',
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
           };
-          setReports([newReport, ...reports]);
+          setReports((prev) => [newReport, ...prev]);
           setSelectedFile(null);
           return 100;
         }
@@ -66,9 +77,18 @@ export default function AITools({ isDark }) {
     setReports(reports.filter(r => r.id !== id));
   };
 
-  const filteredReports = reports.filter(r => 
-    r.file.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredReports = reports.filter((r) => {
+    let fileName = "";
+
+    if (typeof r.file === "string") {
+      fileName = r.file;
+    } else if (r.file && typeof r.file === "object") {
+      fileName = r.file.name || "";
+    }
+
+    return fileName.toLowerCase().includes((searchQuery || "").toLowerCase());
+  });
+
 
   return (
     <div className="space-y-8 pb-12">
@@ -82,20 +102,18 @@ export default function AITools({ isDark }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className={`lg:col-span-1 p-8 rounded-3xl border ${
-          isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-        }`}>
-          <h3 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-deep-charcoal'}`}>AI Detection & Plagiarism Check</h3>
-          <div 
-            onClick={() => !isScanning && fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-6 transition-all relative overflow-hidden cursor-pointer ${
-            isDark ? 'border-slate-800 bg-slate-900/50 hover:border-royal-indigo' : 'border-gray-200 bg-gray-50/50 hover:border-primary-blue'
+        <div className={`lg:col-span-1 p-8 rounded-3xl border ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
           }`}>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              className="hidden" 
+          <h3 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-deep-charcoal'}`}>AI Detection & Plagiarism Check</h3>
+          <div
+            onClick={() => !isScanning && fileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-6 transition-all relative overflow-hidden cursor-pointer ${isDark ? 'border-slate-800 bg-slate-900/50 hover:border-royal-indigo' : 'border-gray-200 bg-gray-50/50 hover:border-primary-blue'
+              }`}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
               accept=".pdf,.docx,.txt"
             />
             {isScanning ? (
@@ -108,10 +126,10 @@ export default function AITools({ isDark }) {
                 </div>
                 <div className="space-y-2">
                   <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
-                    <motion.div 
+                    <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${scanProgress}%` }}
-                      className="bg-royal-indigo h-2 rounded-full" 
+                      className="bg-royal-indigo h-2 rounded-full"
                     />
                   </div>
                   <p className="text-xs font-bold text-royal-indigo">Analyzing Document... {scanProgress}%</p>
@@ -119,27 +137,25 @@ export default function AITools({ isDark }) {
               </div>
             ) : (
               <>
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                  isDark ? 'bg-slate-800 text-slate-500' : 'bg-white text-gray-400 shadow-sm'
-                }`}>
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-slate-800 text-slate-500' : 'bg-white text-gray-400 shadow-sm'
+                  }`}>
                   <Upload size={32} />
                 </div>
                 <div>
                   <p className={`text-lg font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Document</p>
                   <p className="text-sm text-slate-500 mt-1">Drag and drop or click to browse</p>
                 </div>
-                <button 
+                <button
                   onClick={handleScan}
-                  className={`px-8 py-3 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 ${
-                    isDark ? 'bg-royal-indigo text-white' : 'bg-primary-blue text-white'
-                  }`}
+                  className={`px-8 py-3 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'bg-royal-indigo text-white' : 'bg-primary-blue text-white'
+                    }`}
                 >
                   Start Scan
                 </button>
               </>
             )}
             {isScanning && (
-              <motion.div 
+              <motion.div
                 initial={{ y: -100 }}
                 animate={{ y: 400 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -163,21 +179,19 @@ export default function AITools({ isDark }) {
           </div>
         </div>
 
-        <div className={`lg:col-span-2 p-8 rounded-3xl border ${
-          isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-        }`}>
+        <div className={`lg:col-span-2 p-8 rounded-3xl border ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+          }`}>
           <div className="flex justify-between items-center mb-8">
             <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-deep-charcoal'}`}>Recent Reports</h3>
-            <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border ${
-              isDark ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-gray-50 border-gray-100 text-gray-500'
-            }`}>
+            <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-gray-50 border-gray-100 text-gray-500'
+              }`}>
               <Search size={16} />
-              <input 
-                type="text" 
-                placeholder="Search reports..." 
+              <input
+                type="text"
+                placeholder="Search reports..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-xs w-40" 
+                className="bg-transparent border-none outline-none text-xs w-40"
               />
             </div>
           </div>
@@ -196,8 +210,8 @@ export default function AITools({ isDark }) {
               <tbody className="divide-y divide-inherit">
                 <AnimatePresence>
                   {filteredReports.map((report) => (
-                    <motion.tr 
-                      key={report.id} 
+                    <motion.tr
+                      key={report.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
@@ -208,21 +222,23 @@ export default function AITools({ isDark }) {
                           <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
                             <FileSearch size={18} className="text-royal-indigo" />
                           </div>
-                          <span className={`text-sm font-bold ${isDark ? 'text-slate-200' : 'text-deep-charcoal'}`}>{report.file}</span>
+                          <span className="text-sm font-bold ...">
+                            {typeof report.file === "string"
+                              ? report.file
+                              : report.file?.name || "Unknown File"}
+                          </span>
                         </div>
                       </td>
                       <td className="py-4 text-center">
-                        <span className={`text-sm font-bold ${
-                          parseInt(report.aiScore) > 70 ? 'text-red-500' : (parseInt(report.aiScore) > 30 ? 'text-amber-500' : 'text-green-500')
-                        }`}>
+                        <span className={`text-sm font-bold ${parseInt(report.aiScore) > 70 ? 'text-red-500' : (parseInt(report.aiScore) > 30 ? 'text-amber-500' : 'text-green-500')
+                          }`}>
                           {report.aiScore}
                         </span>
                       </td>
                       <td className="py-4 text-center">
-                        <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
-                          report.status === 'Verified' ? 'bg-green-500/10 text-green-500' : 
+                        <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${report.status === 'Verified' ? 'bg-green-500/10 text-green-500' :
                           (report.status === 'Detected' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500')
-                        }`}>
+                          }`}>
                           {report.status}
                         </span>
                       </td>
@@ -230,7 +246,7 @@ export default function AITools({ isDark }) {
                       <td className="py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="p-2 rounded-lg hover:bg-slate-800 text-slate-500"><Download size={14} /></button>
-                          <button 
+                          <button
                             onClick={() => deleteReport(report.id)}
                             className="p-2 rounded-lg hover:bg-red-500/10 text-red-500"
                           >

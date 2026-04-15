@@ -80,7 +80,7 @@ const InternshipCard = ({ internship, isDark, onClick, onApply  }) => {
             console.log("APPLY CLICKED");
 
             if (onApply) {
-              onApply(internship._id);
+              onApply(internship);
             } else {
               console.log("onApply not received ❌");
             }

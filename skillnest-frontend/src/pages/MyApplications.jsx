@@ -1,8 +1,8 @@
-import { 
-  FileText, 
-  Calendar, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  FileText,
+  Calendar,
+  CheckCircle2,
+  XCircle,
   Clock,
   ExternalLink,
   Search
@@ -79,6 +79,8 @@ const getStatusIcon = (status) => {
 };
 
 export default function MyApplications({ isDark }) {
+  const applications = JSON.parse(localStorage.getItem("applications")) || [];
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -90,13 +92,12 @@ export default function MyApplications({ isDark }) {
             Track and manage your internship applications.
           </p>
         </div>
-        <div className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border w-full md:w-80 ${
-          isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-        }`}>
+        <div className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border w-full md:w-80 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+          }`}>
           <Search size={18} className="text-slate-500" />
-          <input 
-            type="text" 
-            placeholder="Search applications..." 
+          <input
+            type="text"
+            placeholder="Search applications..."
             className="bg-transparent border-none outline-none text-sm w-full text-slate-400"
           />
         </div>
@@ -109,14 +110,20 @@ export default function MyApplications({ isDark }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`p-6 rounded-3xl border flex flex-col md:flex-row items-center gap-6 transition-all hover:scale-[1.01] ${
-              isDark ? 'bg-dark-slate border-slate-800 hover:bg-slate-800/50' : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
-            }`}
+            className={`p-6 rounded-3xl border flex flex-col md:flex-row items-center gap-6 transition-all hover:scale-[1.01] ${isDark ? 'bg-dark-slate border-slate-800 hover:bg-slate-800/50' : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
+              }`}
           >
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 ${
-              isDark ? 'bg-slate-800' : 'bg-gray-50'
-            }`}>
-              <img src={app.logo} alt={app.company} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div key={app.id}>
+              <h3>{app.title}</h3>
+              <p>{app.company}</p>
+              {/* <span>{app.status}</span> */}
+            </div>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-50'
+              }`}>
+              <img
+                src={app.logo || "https://via.placeholder.com/50"}
+                alt="company"
+              />
             </div>
 
             <div className="flex-1 text-center md:text-left">
@@ -140,14 +147,12 @@ export default function MyApplications({ isDark }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className={`p-3 rounded-2xl border transition-all ${
-                isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-100 text-gray-400 hover:bg-gray-50'
-              }`}>
+              <button className={`p-3 rounded-2xl border transition-all ${isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-100 text-gray-400 hover:bg-gray-50'
+                }`}>
                 <FileText size={20} />
               </button>
-              <button className={`p-3 rounded-2xl border transition-all ${
-                isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-100 text-gray-400 hover:bg-gray-50'
-              }`}>
+              <button className={`p-3 rounded-2xl border transition-all ${isDark ? 'border-slate-700 text-slate-400 hover:bg-slate-800' : 'border-gray-100 text-gray-400 hover:bg-gray-50'
+                }`}>
                 <ExternalLink size={20} />
               </button>
             </div>

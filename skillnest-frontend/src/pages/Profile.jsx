@@ -1,11 +1,11 @@
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Building2, 
-  GraduationCap, 
-  Award, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Building2,
+  GraduationCap,
+  Award,
   Briefcase,
   Edit2,
   Camera,
@@ -44,14 +44,52 @@ export default function Profile({ isDark }) {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const [tempData, setTempData] = useState({
+    name: user?.name || "User",
+    role: user?.role || "Student",
+    location: user?.location || "New Delhi, India",
+    company: user?.company || "Not Applicable",
+    email: user?.email || "Not Provided",
+    phone: user?.phone || "+91 98765 43210",
+    university: user?.university || "Delhi Technological University"
+  });
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(tempData)
+      });
+  
+      const data = await res.json(); // 👈 yahan data aaya
+  
+      // 🔥 ye use kar (updatedUser nahi)
+      localStorage.setItem("user", JSON.stringify(data));
+  
+      setIsModalOpen(false);
+      setIsEditing(false);
+      setShowSuccessMessage(true);
+  
+    } catch (err) {
+      console.log("Error:", err);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setIsEditing(false);
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
       {/* Profile Header */}
-      <div className={`relative rounded-3xl border overflow-hidden ${
-        isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-      }`}>
+      <div className={`relative rounded-3xl border overflow-hidden ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+        }`}>
         <div className="h-50 relative">
-        <img
+          <img
             src={Img}
             alt="cover"
             className="w-full h-full object-cover"
@@ -63,31 +101,28 @@ export default function Profile({ isDark }) {
         <div className="px-8 pb-8">
           <div className="relative -mt-16 mb-6 flex items-end justify-between">
             <div className="relative">
-              <div className={`w-32 h-32 rounded-full border-4 p-1 overflow-hidden shadow-lg ${
-                isDark ? 'bg-dark-slate border-royal-indigo/30' : 'bg-white border-primary-blue/30'
-              }`}>
-                <img 
-                  src="https://picsum.photos/seed/trial/200/200" 
-                  alt="Profile" 
+              <div className={`w-32 h-32 rounded-full border-4 p-1 overflow-hidden shadow-lg ${isDark ? 'bg-dark-slate border-royal-indigo/30' : 'bg-white border-primary-blue/30'
+                }`}>
+                <img
+                  src="https://picsum.photos/seed/trial/200/200"
+                  alt="Profile"
                   className="w-full h-full object-cover rounded-full"
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <button className={`absolute bottom-2 right-2 p-2 rounded-xl text-white shadow-lg ${
-                isDark ? 'bg-royal-indigo' : 'bg-primary-blue'
-              }`}>
+              <button className={`absolute bottom-2 right-2 p-2 rounded-xl text-white shadow-lg ${isDark ? 'bg-royal-indigo' : 'bg-primary-blue'
+                }`}>
                 <Camera size={16} />
               </button>
             </div>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => {
                   setIsEditing(!isEditing);
                   setIsModalOpen(true);
                 }}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold transition-all shadow-lg hover:scale-105 active:scale-95 ${
-                  isDark ? 'bg-royal-indigo text-white' : 'bg-primary-blue text-white'
-                }`}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold transition-all shadow-lg hover:scale-105 active:scale-95 ${isDark ? 'bg-royal-indigo text-white' : 'bg-primary-blue text-white'
+                  }`}
               >
                 <Edit2 size={18} />
                 {isEditing ? 'Close Editor' : 'Edit Profile'}
@@ -129,9 +164,8 @@ export default function Profile({ isDark }) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
-            className={`p-6 rounded-3xl border text-center ${
-              isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-            }`}
+            className={`p-6 rounded-3xl border text-center ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+              }`}
           >
             <div className={`mx-auto w-10 h-10 rounded-2xl flex items-center justify-center mb-4 ${stat.color} bg-opacity-10`}>
               <stat.icon size={20} />
@@ -144,9 +178,8 @@ export default function Profile({ isDark }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Personal Info */}
-        <div className={`lg:col-span-2 p-8 rounded-3xl border ${
-          isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-        }`}>
+        <div className={`lg:col-span-2 p-8 rounded-3xl border ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+          }`}>
           <h3 className={`text-xl font-bold mb-8 ${isDark ? 'text-white' : 'text-deep-charcoal'}`}>Personal Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -196,9 +229,8 @@ export default function Profile({ isDark }) {
         </div>
 
         {/* Danger Zone */}
-        <div className={`p-8 rounded-3xl border ${
-          isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
-        }`}>
+        <div className={`p-8 rounded-3xl border ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100 shadow-sm'
+          }`}>
           <h3 className={`text-xl font-bold mb-8 text-red-500`}>Danger Zone</h3>
           <div className="space-y-6">
             <div className="space-y-2">
@@ -233,9 +265,8 @@ export default function Profile({ isDark }) {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className={`relative w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden border ${
-                isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100'
-              }`}
+              className={`relative w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden border ${isDark ? 'bg-dark-slate border-slate-800' : 'bg-white border-gray-100'
+                }`}
             >
               <div className="p-8">
                 <div className="flex items-center justify-between mb-8">
@@ -248,7 +279,7 @@ export default function Profile({ isDark }) {
                       <p className="text-sm text-slate-500">Update your personal information</p>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={handleCancel}
                     className={`p-2 rounded-xl transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-gray-100 text-gray-400'}`}
                   >
@@ -259,97 +290,88 @@ export default function Profile({ isDark }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.name}
                       onChange={(e) => setTempData({ ...tempData, name: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Intern Role</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.role}
                       onChange={(e) => setTempData({ ...tempData, role: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Location</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.location}
                       onChange={(e) => setTempData({ ...tempData, location: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Company</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.company}
                       onChange={(e) => setTempData({ ...tempData, company: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       value={tempData.email}
                       onChange={(e) => setTempData({ ...tempData, email: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.phone}
                       onChange={(e) => setTempData({ ...tempData, phone: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">University</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={tempData.university}
                       onChange={(e) => setTempData({ ...tempData, university: e.target.value })}
-                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${
-                        isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
-                      }`} 
+                      className={`w-full p-3 rounded-xl border bg-transparent outline-none focus:ring-2 focus:ring-royal-indigo/50 transition-all ${isDark ? 'border-slate-800 text-white' : 'border-gray-200 text-deep-charcoal'
+                        }`}
                     />
                   </div>
                 </div>
 
                 <div className="flex gap-4 mt-10">
-                  <button 
+                  <button
                     onClick={handleCancel}
-                    className={`flex-1 py-4 rounded-2xl font-bold transition-all ${
-                      isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-gray-100 text-deep-charcoal hover:bg-gray-200'
-                    }`}
+                    className={`flex-1 py-4 rounded-2xl font-bold transition-all ${isDark ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-gray-100 text-deep-charcoal hover:bg-gray-200'
+                      }`}
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={handleSave}
-                    className={`flex-1 py-4 rounded-2xl font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-royal-indigo/20 ${
-                      isDark ? 'bg-royal-indigo hover:bg-opacity-90' : 'bg-primary-blue hover:bg-opacity-90'
-                    }`}
+                    className={`flex-1 py-4 rounded-2xl font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-royal-indigo/20 ${isDark ? 'bg-royal-indigo hover:bg-opacity-90' : 'bg-primary-blue hover:bg-opacity-90'
+                      }`}
                   >
                     <Save size={20} />
                     Save Changes

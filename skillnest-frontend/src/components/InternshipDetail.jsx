@@ -3,6 +3,29 @@ import { motion } from 'motion/react';
 import React from 'react';
 
 const InternshipDetail = ({ internship, isDark, onBack }) => {
+  if (!internship) {
+    return <div className="text-white p-6">No Internship Data</div>;
+  }
+
+  const handleApply = (internship) => {
+    const existing = JSON.parse(localStorage.getItem("applications")) || [];
+  
+    const newApplication = {
+      id: Date.now(),
+      title: internship.title,
+      company: internship.company,
+      status: "Pending",
+      date: new Date().toLocaleDateString(),
+      logo: internship.logo
+    };
+  
+    localStorage.setItem(
+      "applications",
+      JSON.stringify([newApplication, ...existing])
+    );
+  };
+
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -96,7 +119,7 @@ const InternshipDetail = ({ internship, isDark, onBack }) => {
               <section>
                 <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-deep-charcoal'}`}>Requirements</h2>
                 <ul className="space-y-3">
-                  {internship.requirements.map((req, i) => (
+                {(internship?.requirements || []).map((req, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${isDark ? 'bg-royal-indigo' : 'bg-primary-blue'}`} />
                       <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>{req}</span>
@@ -124,7 +147,7 @@ const InternshipDetail = ({ internship, isDark, onBack }) => {
             </div>
 
             <div className="space-y-3">
-              <button className={`w-full py-4 rounded-2xl font-bold transition-all ${
+              <button onClick={() => handleApply(internship)} className={`w-full py-4 rounded-2xl font-bold transition-all ${
                 isDark 
                   ? 'bg-electric-blue text-deep-obsidian hover:bg-opacity-90' 
                   : 'bg-primary-blue text-white hover:bg-opacity-90'

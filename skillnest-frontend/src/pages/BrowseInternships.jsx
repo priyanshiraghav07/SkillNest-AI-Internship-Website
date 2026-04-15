@@ -107,7 +107,7 @@ export default function BrowseInternships({ isDark }) {
 
   // Real data fetching
   const [internships, setInternships] = useState([]);
-  
+
   // For now, we are not applying any filters to the fetched internships.
   const filteredInternships = internships;
 
@@ -118,22 +118,38 @@ export default function BrowseInternships({ isDark }) {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleApply = async (id) => {
+  const handleApply = async (internship) => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/applications/apply", {
+      await fetch("http://localhost:5000/api/applications/apply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🔥 IMPORTANT FIX
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          internshipId: id,
+          internshipId: internship._id,
         }),
       });
-      const data = await res.json();
+
+      // 🔥 LOCAL STORAGE SAVE (IMPORTANT)
+      const existing = JSON.parse(localStorage.getItem("applications")) || [];
+
+      const newApp = {
+        id: Date.now(),
+        title: internship.title,
+        company: internship.company,
+        status: "Pending",
+        appliedOn: new Date().toLocaleDateString(),
+        // 🔥 FORCE IMAGE (FIX)
+      logo: internship.logo || `https://picsum.photos/seed/${internship.title}/100/100`
+      };
+
+      localStorage.setItem("applications", JSON.stringify([newApp, ...existing]));
+
       alert("Applied Successfully 🚀");
+
     } catch (err) {
       console.log(err);
     }
@@ -159,21 +175,19 @@ export default function BrowseInternships({ isDark }) {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
-          <div className={`flex-1 flex items-center gap-3 px-6 py-4 rounded-3xl border transition-all ${
-            isDark ? 'bg-dark-slate border-slate-800 focus-within:border-royal-indigo' : 'bg-white border-gray-100 shadow-sm focus-within:border-primary-blue'
-          }`}>
+          <div className={`flex-1 flex items-center gap-3 px-6 py-4 rounded-3xl border transition-all ${isDark ? 'bg-dark-slate border-slate-800 focus-within:border-royal-indigo' : 'bg-white border-gray-100 shadow-sm focus-within:border-primary-blue'
+            }`}>
             <Search size={22} className="text-slate-500" />
-            <input 
-              type="text" 
-              placeholder="Search for roles, companies, or skills..." 
+            <input
+              type="text"
+              placeholder="Search for roles, companies, or skills..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent border-none outline-none text-lg w-full text-slate-400"
             />
           </div>
-          <button className={`flex items-center gap-2 px-8 py-4 rounded-3xl font-bold border transition-all ${
-            isDark ? 'bg-dark-slate border-slate-800 text-slate-300 hover:bg-slate-800' : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 shadow-sm'
-          }`}>
+          <button className={`flex items-center gap-2 px-8 py-4 rounded-3xl font-bold border transition-all ${isDark ? 'bg-dark-slate border-slate-800 text-slate-300 hover:bg-slate-800' : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 shadow-sm'
+            }`}>
             <Filter size={20} />
             Filters
           </button>
@@ -184,11 +198,10 @@ export default function BrowseInternships({ isDark }) {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${
-                activeCategory === cat
-                  ? (isDark ? 'bg-royal-indigo text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-primary-blue text-white shadow-lg shadow-primary-blue/20')
-                  : (isDark ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')
-              }`}
+              className={`px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${activeCategory === cat
+                ? (isDark ? 'bg-royal-indigo text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-primary-blue text-white shadow-lg shadow-primary-blue/20')
+                : (isDark ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')
+                }`}
             >
               {cat}
             </button>
@@ -198,14 +211,14 @@ export default function BrowseInternships({ isDark }) {
 
       <AnimatePresence mode="wait">
         {selectedInternship ? (
-          <InternshipDetail 
+          <InternshipDetail
             key="detail"
-            internship={selectedInternship} 
-            onBack={() => setSelectedInternship(null)} 
+            internship={selectedInternship}
+            onBack={() => setSelectedInternship(null)}
             isDark={isDark}
           />
         ) : filteredInternships.length > 0 ? (
-          <motion.div 
+          <motion.div
             key="list"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -229,7 +242,7 @@ export default function BrowseInternships({ isDark }) {
             ))}
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             key="empty"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
